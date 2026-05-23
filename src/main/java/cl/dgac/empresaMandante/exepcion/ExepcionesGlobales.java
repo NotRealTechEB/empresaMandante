@@ -36,6 +36,7 @@ public class ExepcionesGlobales {
         return new ResponseEntity<>(errores,HttpStatus.BAD_REQUEST);
 
     }
+@ExceptionHandler(Exception.class)
     public ResponseEntity<DtoError> internalError(Exception ex, HttpServletRequest request) {
         DtoError error = new DtoError(
                 LocalDateTime.now(),
@@ -46,7 +47,6 @@ public class ExepcionesGlobales {
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);}
     @ExceptionHandler(DataIntegrityViolationException.class)
-    
 public ResponseEntity<DtoError> manejarDuplicados(DataIntegrityViolationException ex, HttpServletRequest request) {
     DtoError error = new DtoError(
         LocalDateTime.now(),
