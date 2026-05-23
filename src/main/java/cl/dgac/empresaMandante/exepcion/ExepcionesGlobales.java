@@ -3,6 +3,8 @@ package cl.dgac.empresaMandante.exepcion;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -43,6 +45,18 @@ public class ExepcionesGlobales {
                 request.getRequestURI()
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);}
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    
+public ResponseEntity<DtoError> manejarDuplicados(DataIntegrityViolationException ex, HttpServletRequest request) {
+    DtoError error = new DtoError(
+        LocalDateTime.now(),
+        HttpStatus.CONFLICT.value(), // Código 409 Conflict es el ideal aquí
+        "Error de duplicidad",
+        "Los datos ingresados ya se encuentran registrados (RUT o Nombre duplicado).",
+        request.getRequestURI()
+    );
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+}
 }
 
 
