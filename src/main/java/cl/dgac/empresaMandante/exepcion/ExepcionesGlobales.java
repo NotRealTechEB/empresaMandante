@@ -10,9 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import cl.dgac.empresaMandante.dto.DtoError;
 import jakarta.servlet.http.HttpServletRequest;
 
+@RestControllerAdvice
 public class ExepcionesGlobales {
 @ExceptionHandler(ErrorEnRecursos.class)
     public ResponseEntity<DtoError> ErrorEnRecursos(ErrorEnRecursos ex, HttpServletRequest request){
@@ -46,13 +49,14 @@ public class ExepcionesGlobales {
                 request.getRequestURI()
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);}
-    @ExceptionHandler(DataIntegrityViolationException.class)
-public ResponseEntity<DtoError> manejarDuplicados(DataIntegrityViolationException ex, HttpServletRequest request) {
-    DtoError error = new DtoError(
+
+@ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<DtoError> manejarDuplicados(DataIntegrityViolationException ex, HttpServletRequest request) {
+        DtoError error = new DtoError(
         LocalDateTime.now(),
         HttpStatus.CONFLICT.value(), // Código 409 Conflict es el ideal aquí
         "Error de duplicidad",
-        "Los datos ingresados ya se encuentran registrados (RUT o Nombre duplicado).",
+        "Los datos ingresados ya se encuentran registrados (RUT).",
         request.getRequestURI()
     );
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);

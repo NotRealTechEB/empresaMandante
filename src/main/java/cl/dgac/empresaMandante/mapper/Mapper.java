@@ -6,7 +6,7 @@ import java.util.List;
 import cl.dgac.empresaMandante.dto.Dto;
 import cl.dgac.empresaMandante.model.Modelo;
 
-public class mapper {
+public class Mapper {
         public static Modelo addModel(Dto entity){
         Modelo empresa= new Modelo();
         empresa.setEmail(entity.email());
