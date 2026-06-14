@@ -4,33 +4,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cl.dgac.empresaMandante.dto.Dto;
-import cl.dgac.empresaMandante.model.Modelo;
+import cl.dgac.empresaMandante.model.EmpresaMandanteModelo;
 
 public class Mapper {
-        public static Modelo addModel(Dto entity){
-        Modelo empresa= new Modelo();
+        public static EmpresaMandanteModelo addModel(Dto entity){
+        EmpresaMandanteModelo empresa= new EmpresaMandanteModelo();
         empresa.setEmail(entity.email());
         empresa.setNombre(entity.nombre());
         empresa.setRut(entity.rut());
         empresa.setId(null);
         return empresa;
     }
-    public static Modelo updateModel(Long id ,Dto entity){
-        Modelo empresa= new Modelo();
+    public static EmpresaMandanteModelo updateModel(Long id ,Dto entity){
+        EmpresaMandanteModelo empresa= new EmpresaMandanteModelo();
         empresa.setEmail(entity.email());
         empresa.setNombre(entity.nombre());
         empresa.setRut(entity.rut());
         empresa.setId(id);
         return empresa;
     }
-    public static Dto modelTodDto(Modelo entiity){
+    public static Dto modelTodDto(EmpresaMandanteModelo entiity){
         Dto dto = new Dto(entiity.getNombre(),
             entiity.getRut(), entiity.getEmail(), entiity.getId());
             return dto;
     }
-    public static List<Dto> parseoListas(List<Modelo> lista ){
+    public static List<Dto> parseoListas(List<EmpresaMandanteModelo> lista ){
         List<Dto>dtos= new ArrayList<>();
-        for (Modelo modelo : lista) {
+        for (EmpresaMandanteModelo modelo : lista) {
             dtos.add(modelTodDto(modelo));
         }
         return dtos;

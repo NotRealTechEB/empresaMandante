@@ -5,20 +5,20 @@ import org.springframework.stereotype.Service;
 import cl.dgac.empresaMandante.dto.Dto;
 import cl.dgac.empresaMandante.exepcion.ErrorEnRecursos;
 import cl.dgac.empresaMandante.mapper.Mapper;
-import cl.dgac.empresaMandante.model.Modelo;
-import cl.dgac.empresaMandante.repository.Repositorio;
+import cl.dgac.empresaMandante.model.EmpresaMandanteModelo;
+import cl.dgac.empresaMandante.repository.EmpresaMandanteRepositorio;
 
 @Service
-public class Servicio {
+public class EmpresaMandanteServicio {
     
-    private final Repositorio repo;
+    private final EmpresaMandanteRepositorio repo;
 
-    public Servicio (Repositorio repo){
+    public EmpresaMandanteServicio (EmpresaMandanteRepositorio repo){
         this.repo=repo;
     }
 
     public List<Dto> listarEmpresas(){
-        List<Modelo> lista = repo.findAll();
+        List<EmpresaMandanteModelo> lista = repo.findAll();
         return Mapper.parseoListas(lista);
     }
     public List<Dto> filtarNombre(String name ){
@@ -29,7 +29,7 @@ public class Servicio {
         return lista; 
     }
     public Dto filtarut(String rut ){
-        Modelo model = repo.findByRut(rut).orElseThrow(
+        EmpresaMandanteModelo model = repo.findByRut(rut).orElseThrow(
             ()->new ErrorEnRecursos("Empresa con RUT " + rut + " no encontrada"));
         return Mapper.modelTodDto(model);
     } 
@@ -43,8 +43,8 @@ public class Servicio {
         repo.deleteById(dto.id());
         return "la empresa " +dto.nombre()+" fue eliminada exitosamente";
     }
-    public Modelo validarId(Long id){
-        Modelo model =repo.findById(id).orElseThrow( 
+    public EmpresaMandanteModelo validarId(Long id){
+        EmpresaMandanteModelo model =repo.findById(id).orElseThrow( 
             ()->new ErrorEnRecursos("Empresa con el id " + id + " no encontrada"));
         return model ;
     }
