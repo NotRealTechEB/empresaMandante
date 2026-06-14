@@ -13,43 +13,75 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import cl.dgac.empresaMandante.dto.Dto;
 import cl.dgac.empresaMandante.mapper.Mapper;
-import cl.dgac.empresaMandante.service.Servicio;
+import cl.dgac.empresaMandante.service.EmpresaMandanteServicio;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1.5/Emandante")
-public class Controller {
-    private final Servicio servicio ;
-    public Controller(Servicio servicio) {
+@Tag(name = "Empresa Mandante",
+    description = "esta api se encarga de comunicarse con la BD para hacer el crud basico y flitros de busqueda"
+)
+
+public class EmpresaMandanteController {
+    private final EmpresaMandanteServicio servicio ;
+    public EmpresaMandanteController(EmpresaMandanteServicio servicio) {
         this.servicio = servicio;
     }
+
     @GetMapping("/listar")
+    @Operation(
+        summary = "obtener todas las empresas Mandantes",
+        description = "lista todas las empresas de la BD"
+    )
+
     public ResponseEntity<List<Dto>>  getMethodName() {
         List<Dto> lista =servicio.listarEmpresas();
         return  new ResponseEntity<List<Dto>>(lista, HttpStatus.OK);
     }
     @GetMapping("/buscaRut")
+    @Operation(
+        summary = "empresa por rut",
+        description = "trae la empresa con el rut de la empresa"
+    )
     public ResponseEntity<Dto> buscarRut(@RequestParam (name="rut") String rut) {
         Dto modelo = servicio.filtarut(rut); 
         return new ResponseEntity<Dto>(modelo, HttpStatus.OK);
     }
     @GetMapping("/buscaNombre")
+    @Operation(
+        summary = "busca empresas con nombre similar",
+        description = "Lista empresa con nombre similar"
+    )
     public ResponseEntity<List<Dto>> buscarNombre(@RequestParam(name="nombre") String nombre) {
         List<Dto> lista = servicio.filtarNombre(nombre); 
         return new ResponseEntity<List<Dto>>(lista, HttpStatus.OK);
     }
     @PostMapping("/agreagrEmpresas")
+    @Operation(
+        summary = "agregar empresa",
+        description = "agrega una empresa con el json adecuado"
+    )
     public ResponseEntity<Dto> agragarEmpresa(@Valid@RequestBody Dto entity) {
         servicio.add(entity);
         Dto modelo = servicio.filtarut(entity.rut());
         return new ResponseEntity<Dto>(modelo,HttpStatus.OK);
     }
     @PutMapping("/editar")
+    @Operation(
+        summary = "editar empresas",
+        description = "edita una empresa que tenga el rut igual"
+    )
     public ResponseEntity<Dto> editarEmpresa(@RequestParam(name="rut") String rut, @Valid @RequestBody Dto entity) {
         Dto modelo =servicio.filtarut(rut);
         return new ResponseEntity<Dto>(servicio.add(Mapper.modelTodDto(Mapper.updateModel(modelo.id(), entity))), HttpStatus.OK);
     }
-    @DeleteMapping("borrarEmprea")
+    @DeleteMapping("/borrarEmprea")
+    @Operation(
+        summary = "borra empresa",
+        description = "borra una empresa que tenga el rut igual"
+    )
     public ResponseEntity<String> eliminarEmpresa(@RequestParam(name= "rut") String rut){
         return new ResponseEntity<String> (servicio.delete(rut),HttpStatus.OK);
 

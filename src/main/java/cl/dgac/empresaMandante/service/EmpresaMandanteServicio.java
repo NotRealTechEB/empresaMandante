@@ -1,9 +1,7 @@
 package cl.dgac.empresaMandante.service;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import cl.dgac.empresaMandante.dto.Dto;
 import cl.dgac.empresaMandante.exepcion.ErrorEnRecursos;
 import cl.dgac.empresaMandante.mapper.Mapper;
@@ -12,8 +10,12 @@ import cl.dgac.empresaMandante.repository.Repositorio;
 
 @Service
 public class Servicio {
-    @Autowired
-    private Repositorio repo;
+    
+    private final Repositorio repo;
+
+    public Servicio (Repositorio repo){
+        this.repo=repo;
+    }
 
     public List<Dto> listarEmpresas(){
         List<Modelo> lista = repo.findAll();
