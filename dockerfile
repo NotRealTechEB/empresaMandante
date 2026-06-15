@@ -1,6 +1,9 @@
 # 1. Usamos una imagen base con JDK 25 para compilar y ejecutar
 FROM eclipse-temurin:25-jdk-jammy AS build
 
+ENV JAVA_HOME=/opt/java/openjdk
+RUN echo "org.gradle.java.home=$JAVA_HOME" >> gradle.properties
+
 # 2. Establecemos el directorio de trabajo
 WORKDIR /app
 
