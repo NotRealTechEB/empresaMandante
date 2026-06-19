@@ -12,55 +12,51 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import cl.dgac.empresaMandante.dto.DtoError;
+import cl.dgac.empresaMandante.dto.DtoExeption;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class ExepcionesGlobales {
-@ExceptionHandler(ErrorEnRecursos.class)
-    public ResponseEntity<DtoError> ErrorEnRecursos(ErrorEnRecursos ex, HttpServletRequest request){
-        DtoError error = new DtoError(
+    private ResponseEntity<DtoExeption> buildResponse(
+        HttpStatus status,
+        String mnesaje,
+        String ruta,
+        Map<String, String> detalles){
+        DtoExeption dto = new DtoExeption(
             LocalDateTime.now(),
-            HttpStatus.NOT_FOUND.value(),
-            "recurso no encontrado",
-            ex.getMessage(),
-            request.getRequestURI()
+            status.value(),
+            status.getReasonPhrase(),
+            mnesaje,
+            detalles,
+            ruta
         );
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return  ResponseEntity.status(status).body(dto);
+    }
+    @ExceptionHandler(ErrorEnRecursos.class)
+    public ResponseEntity<DtoExeption> ErrorEnRecursos(ErrorEnRecursos ex, HttpServletRequest request){
+        return buildResponse(HttpStatus.NOT_FOUND, "recurso no encontrado", request.getRequestURI(),
+        null);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String,String>> validacionesDto(MethodArgumentNotValidException ex){
+    public ResponseEntity<DtoExeption> validacionesDto(MethodArgumentNotValidException ex, HttpServletRequest request){
         Map<String, String> errores =new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error)->{
             String campo =((FieldError)error).getField();
             String mensaje = error.getDefaultMessage();
             errores.put(campo,mensaje);
         });
-        return new ResponseEntity<>(errores,HttpStatus.BAD_REQUEST);
-
+        return buildResponse(HttpStatus.BAD_REQUEST,
+            "Errores en el Json",request.getRequestURI(),
+            errores);}
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<DtoExeption> internalError(Exception ex, HttpServletRequest request) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error Interno del Servidor", request.getRequestURI(), null);
     }
-@ExceptionHandler(Exception.class)
-    public ResponseEntity<DtoError> internalError(Exception ex, HttpServletRequest request) {
-        DtoError error = new DtoError(
-                LocalDateTime.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(), // 500
-                "Error Interno del Servidor",
-                "Ocurrió un error inesperado: " + ex.getMessage(),
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);}
-
-@ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<DtoError> manejarDuplicados(DataIntegrityViolationException ex, HttpServletRequest request) {
-        DtoError error = new DtoError(
-        LocalDateTime.now(),
-        HttpStatus.CONFLICT.value(), // Código 409 Conflict es el ideal aquí
-        "Error de duplicidad",
-        "Los datos ingresados ya se encuentran registrados (RUT).",
-        request.getRequestURI()
-    );
-    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
-}
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<DtoExeption> manejarDuplicados(DataIntegrityViolationException ex, HttpServletRequest request) {
+    return buildResponse(HttpStatus.CONFLICT, "correo o rut estan ya en la BaseDatos",
+    request.getRequestURI(), null);
+    }
 }
 
 
