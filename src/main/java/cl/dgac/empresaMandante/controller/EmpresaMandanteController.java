@@ -89,7 +89,7 @@ public class EmpresaMandanteController {
     @ApiResponse(responseCode = "400", description = "error en uno o mas puntos del json ")
     })
     public ResponseEntity<Dto> agragarEmpresa(@Valid @RequestBody(
-        description = "Datos de la solicitud a Actualizar",
+        description = "Datos de la Empresa a Agregar",
         required = true,
         content = @Content(
             mediaType = "application/json",
@@ -122,7 +122,27 @@ public class EmpresaMandanteController {
     @ApiResponse(responseCode = "200", description = "Operación exitosa"),
     @ApiResponse(responseCode = "400", description = "error en uno o mas puntos del json ")
     })
-    public ResponseEntity<Dto> editarEmpresa(@RequestParam(name="rut") String rut, @Valid @RequestBody Dto entity) {
+    public ResponseEntity<Dto> editarEmpresa(@RequestParam(name="rut") String rut, @Valid 
+    @RequestBody(
+        description = "Datos de la Empresa a Agregar",
+        required = true,
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(implementation = Dto.class),
+            examples = @ExampleObject(
+    name = "Ejemplo de Empresa",
+    summary = "Datos básicos de una empresa registrada",
+    value = """
+    {
+        "id": 1,
+        "nombre": "TechSolutions Chile",
+        "rut": "76.123.456-K",
+        "email": "contacto@techsolutions.cl"
+    }
+    """
+)
+        )) @org.springframework.web.bind.annotation.RequestBody 
+    Dto entity) {
         Dto modelo =servicio.filtarut(rut);
         return new ResponseEntity<Dto>(servicio.add(Mapper.modelTodDto(Mapper.updateModel(modelo.id(), entity))), HttpStatus.OK);
     }
